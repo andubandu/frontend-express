@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Posts</title>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <header>
-        <h1>Posts</h1>
-
+<body class="bg-gray-100 text-gray-900">
+    <header class="bg-blue-600 text-white p-4 text-center">
+        <h1 class="text-2xl font-bold">Posts</h1>
     </header>
 
-    <div id="posts"></div>
+    <div id="posts" class="max-w-4xl mx-auto mt-6 space-y-6"></div>
 
     <script>
         function displayPosts(posts){
@@ -20,22 +20,26 @@
             postsContainer.innerHTML = '';
             posts.forEach(post => {
                 const postElement = document.createElement('div');
-            postElement.innerHTML = `
-                <h2>${post.title}</h2>
-                <p>${post.content}</p>
-                ${post.media ? 
-                    post.media.type === 'image' ?
-                        `<img src="${post.media.url}" alt="${post.title}">` :
-                    post.media.type === 'video' ?
-                        `<video src="${post.media.url}" controls></video>` :
-                    ''
-                : ''}
-                <p>Author: ${post.author.username}</p>
-                <img src="${post.author.avatar}" alt="${post.author.username}" style="width: 50px; height: 50px; border-radius: 50%;">
-            `;
-            postsContainer.appendChild(postElement);
+                postElement.className = "bg-white shadow-lg rounded-lg p-6";
+                postElement.innerHTML = `
+                    <h2 class="text-xl font-semibold">${post.title}</h2>
+                    <p class="text-gray-700 mt-2">${post.content}</p>
+                    ${post.media ? 
+                        post.media.type === 'image' ?
+                            `<img src="${post.media.url}" alt="${post.title}" class="w-full mt-4 rounded">` :
+                        post.media.type === 'video' ?
+                            `<video src="${post.media.url}" controls class="w-full mt-4 rounded"></video>` :
+                        ''
+                    : ''}
+                    <div class="flex items-center mt-4">
+                        <img src="${post.author.avatar}" alt="${post.author.username}" class="w-12 h-12 rounded-full border border-gray-300">
+                        <p class="ml-3 text-gray-800 font-medium">Author: ${post.author.username}</p>
+                    </div>
+                `;
+                postsContainer.appendChild(postElement);
             });
         }
+        
         async function getPosts(){
             try {
                 const response = await axios.get('https://express-auth-so6r.vercel.app/posts');
@@ -44,6 +48,7 @@
                 console.error(error);
             }
         }
+        
         getPosts();
     </script>
 </body>
