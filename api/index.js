@@ -11,19 +11,33 @@ app.get('/', (req, res) => {
 });
 
 app.get('/profile/:username', async (req, res, next) => {
-  try {
-    const { username } = req.params;
-    const userResponse = await axios.get(`https://express-auth-so6r.vercel.app/users/${username}`);
-    const postsResponse = await axios.get(`https://express-auth-so6r.vercel.app/posts`);
-
-    const user = userResponse.data;
-    const posts = postsResponse.data.filter(post => post.author.username === user.username);
-
-    res.render('profile', { user, posts });
-  } catch (error) {
-    next(error);
-  }
-});
+    try {
+      const { username } = req.params;
+      
+      // Fetch user data
+      const userResponse = await axios.get(`https://express-auth-so6r.vercel.app/users/${username}`)
+        .catch(err => {
+          if (err.response && err.response.status === 404) {
+            return null; // Handle 404 from API
+          }
+          throw err;
+        });
+  
+      if (!userResponse) {
+        return res.status(404).render('error', { message: "User does not exist." });
+      }
+  
+      // Fetch posts
+      const postsResponse = await axios.get(`https://express-auth-so6r.vercel.app/posts`);
+      const user = userResponse.data;
+      const posts = postsResponse.data.filter(post => post.author.username === user.username);
+  
+      res.render('profile', { user, posts });
+    } catch (error) {
+      next(error);
+    }
+  });
+  
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
