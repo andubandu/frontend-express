@@ -20,13 +20,20 @@
             postsContainer.innerHTML = '';
             posts.forEach(post => {
                 const postElement = document.createElement('div');
-                postElement.innerHTML = `
-                    <h2>${post.title}</h2>
-                    <p>${post.content}</p>
-                    <p>Author: ${post.author.username}</p>   
-                    
-                `;
-                postsContainer.appendChild(postElement);
+            postElement.innerHTML = `
+                <h2>${post.title}</h2>
+                <p>${post.content}</p>
+                ${post.media ? 
+                    post.media.type === 'image' ?
+                        `<img src="${post.media.url}" alt="${post.title}">` :
+                    post.media.type === 'video' ?
+                        `<video src="${post.media.url}" controls></video>` :
+                    ''
+                : ''}
+                <p>Author: ${post.author.username}</p>
+                <img src="${post.author.avatar}" alt="${post.author.username}" style="width: 50px; height: 50px; border-radius: 50%;">
+            `;
+            postsContainer.appendChild(postElement);
             });
         }
         async function getPosts(){
