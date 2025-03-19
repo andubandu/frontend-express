@@ -7,48 +7,65 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 text-gray-900">
-    <header class="bg-blue-600 text-white p-4 text-center">
-        <h1 class="text-2xl font-bold">Posts</h1>
+<body class="bg-gray-100 min-h-screen">
+    <header class="bg-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+            <h1 class="text-3xl font-bold text-gray-900">Posts</h1>
+        </div>
     </header>
 
-    <div id="posts" class="max-w-4xl mx-auto mt-6 space-y-6"></div>
+    <main class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        <div id="posts" class="grid gap-8 md:grid-cols-2 lg:grid-cols-3"></div>
+    </main>
 
     <script>
-        function displayPosts(posts){
+        function displayPosts(posts) {
             const postsContainer = document.getElementById('posts');
             postsContainer.innerHTML = '';
             posts.forEach(post => {
                 const postElement = document.createElement('div');
-                postElement.className = "bg-white shadow-lg rounded-lg p-6";
+                postElement.className = 'bg-white rounded-lg shadow-md overflow-hidden';
                 postElement.innerHTML = `
-                    <h2 class="text-xl font-semibold">${post.title}</h2>
-                    <p class="text-gray-700 mt-2">${post.content}</p>
-                    ${post.media ? 
-                        post.media.type === 'image' ?
-                            `<img src="${post.media.url}" alt="${post.title}" class="w-full mt-4 rounded">` :
-                        post.media.type === 'video' ?
-                            `<video src="${post.media.url}" controls class="w-full mt-4 rounded"></video>` :
-                        ''
-                    : ''}
-                    <div class="flex items-center mt-4">
-                        <img src="${post.author.avatar}" alt="${post.author.username}" class="w-12 h-12 rounded-full border border-gray-300">
-                        <p class="ml-3 text-gray-800 font-medium">Author: ${post.author.username}</p>
+                    <div class="p-6">
+                        <h2 class="text-xl font-semibold text-gray-900 mb-2">${post.title}</h2>
+                        <p class="text-gray-600 mb-4">${post.content}</p>
+                        ${post.media ? 
+                            post.media.type === 'image' ?
+                                `<div class="mb-4 rounded-lg overflow-hidden">
+                                    <img src="${post.media.url}" alt="${post.title}" class="w-full h-64 object-cover">
+                                </div>` :
+                            post.media.type === 'video' ?
+                                `<div class="mb-4 rounded-lg overflow-hidden">
+                                    <video src="${post.media.url}" controls class="w-full"></video>
+                                </div>` :
+                            ''
+                        : ''}
+                        <div class="flex items-center mt-4 pt-4 border-t border-gray-200">
+                            <img src="${post.author.avatar}" alt="${post.author.username}" 
+                                class="w-10 h-10 rounded-full object-cover mr-4">
+                            <span class="text-sm font-medium text-gray-900">${post.author.username}</span>
+                        </div>
                     </div>
                 `;
                 postsContainer.appendChild(postElement);
             });
         }
-        
-        async function getPosts(){
+
+        async function getPosts() {
             try {
                 const response = await axios.get('https://express-auth-so6r.vercel.app/posts');
                 displayPosts(response.data);
             } catch (error) {
                 console.error(error);
+                const postsContainer = document.getElementById('posts');
+                postsContainer.innerHTML = `
+                    <div class="col-span-full text-center py-12">
+                        <p class="text-red-600">Failed to load posts. Please try again later.</p>
+                    </div>
+                `;
             }
         }
-        
+
         getPosts();
     </script>
 </body>
