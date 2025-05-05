@@ -1,6 +1,4 @@
 const express = require('express')
-const cors = require('cors')
-const jwtDecode = require('jwt-decode')
 const app = express()
 
 app.set('view engine', 'ejs')
