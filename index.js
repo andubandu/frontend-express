@@ -48,6 +48,10 @@ app.get('/posts/:id', async (req, res) => {
     }
 });
 
+app.get('/pathToRegexpError', (req, res) => {
+    res.status(200).send('This route is correctly defined.');
+});
+
 app.get('/login', (req, res) => {
     res.status(200).render('login');
 });
