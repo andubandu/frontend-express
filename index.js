@@ -1,13 +1,12 @@
-const express = require('express')
-const app = express()
+const express = require('express');
+const app = express();
 
-app.set('view engine', 'ejs')
-app.use(express.static('public'))
-
+app.set('view engine', 'ejs');
+app.use(express.static('public'));
 
 app.get('/', async (req, res) => {
-    res.render('index')
-})
+    res.status(200).render('index');
+});
 
 app.get('/profile/:username', async (req, res) => {
     try {
@@ -19,13 +18,13 @@ app.get('/profile/:username', async (req, res) => {
         const filteredPosts = postsJson.filter(post => post.author && post.author.username === req.params.username);
 
         if (profile && profile.username) {
-            res.render('profile', { profile, posts: filteredPosts });
+            res.status(200).render('profile', { profile, posts: filteredPosts });
         } else {
-            res.status(404).send('Profile not found');
+            res.status(200).render('error', { message: 'Profile not found' });
         }
     } catch (error) {
         console.error(error);
-        res.status(500).send('Internal Server Error');
+        res.status(200).render('error', { message: 'Error loading profile' });
     }
 });
 
@@ -41,29 +40,35 @@ app.get('/posts/:id', async (req, res) => {
         const likesRes = await fetch(`https://express-backend-sigma.vercel.app/likes?postId=${postId}&number=true`);
         const likesData = await likesRes.json();
         const likeCount = likesData.count || 0;
-        res.render('post', { post, comments, likeCount });
+
+        res.status(200).render('post', { post, comments, likeCount });
     } catch (err) {
         console.error('Failed to fetch post, comments, or likes:', err);
-        res.status(500).send('Error loading post');
+        res.status(200).render('error', { message: 'Error loading post' });
     }
 });
 
 app.get('/login', (req, res) => {
-    res.render('login')
-})
-
-app.get('/signup', (req, res) => {
-    res.render('signup')
-})
-
-app.get('/dashboard', (req, res) => {
-    res.render('dashboard') 
-})
-
-app.get('/create', (req, res) => {
-    res.render('create-post')
+    res.status(200).render('login');
 });
 
+app.get('/signup', (req, res) => {
+    res.status(200).render('signup');
+});
+
+app.get('/dashboard', (req, res) => {
+    res.status(200).render('dashboard');
+});
+
+app.get('/create', (req, res) => {
+    res.status(200).render('create-post');
+});
+
+app.get('*', (req, res) => {
+    res.status(200).render('error', { message: 'Page not found' });
+});
+
+// Server start
 app.listen(3000, () => {
-    console.log('server is running on http://localhost:3000')
-})
+    console.log('server is running on http://localhost:3000');
+});
