@@ -4,12 +4,12 @@ const app = express();
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
-app.get(/^\/$/, async (req, res) => {
+app.get('/', async (req, res) => {
     res.status(200).render('index');
 });
 
-app.get(/^\/profile\/([a-zA-Z0-9_]{3,20})$/, async (req, res) => { // profile/:username
-    const username = req.params[0];
+app.get('/profile/:username', async (req, res) => {
+    const username = req.params.username;
 
     try {
         const response = await fetch(`https://express-backend-sigma.vercel.app/users/by-user/${username}`);
@@ -30,8 +30,8 @@ app.get(/^\/profile\/([a-zA-Z0-9_]{3,20})$/, async (req, res) => { // profile/:u
     }
 });
 
-app.get(/^\/posts\/([a-fA-F0-9]{24})$/, async (req, res) => { // posts/:postId
-    const postId = req.params[0];  
+app.get('/posts/:postId', async (req, res) => {
+    const postId = req.params.postId;
 
     try {
         const postRes = await fetch(`https://express-backend-sigma.vercel.app/posts/${postId}`);
@@ -51,23 +51,21 @@ app.get(/^\/posts\/([a-fA-F0-9]{24})$/, async (req, res) => { // posts/:postId
     }
 });
 
-
-app.get(/^\/login$/, (req, res) => { //login
+app.get('/login', (req, res) => {
     res.status(200).render('login');
 });
 
-app.get(/^\/signup$/, (req, res) => { //signup
+app.get('/signup', (req, res) => {
     res.status(200).render('signup');
 });
 
-app.get(/^\/dashboard$/, (req, res) => { //dashboard
+app.get('/dashboard', (req, res) => {
     res.status(200).render('dashboard');
 });
 
-app.get(/^\/create$/, (req, res) => { //create
+app.get('/create', (req, res) => {
     res.status(200).render('create-post');
 });
-
 
 app.listen(3000, () => {
     console.log('Server is running on http://localhost:3000');
