@@ -4,18 +4,20 @@ const app = express();
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
-app.get('/', async (req, res) => {
+app.get(/^\/$/, async (req, res) => {
     res.status(200).render('index');
 });
 
-app.get('/profile/:username', async (req, res) => {
+app.get(/^\/profile\/([a-zA-Z0-9_]{3,20})$/, async (req, res) => { // profile/:username
+    const username = req.params[0];
+
     try {
-        const response = await fetch(`https://express-backend-sigma.vercel.app/users/by-user/${req.params.username}`);
+        const response = await fetch(`https://express-backend-sigma.vercel.app/users/by-user/${username}`);
         const profile = await response.json();
 
         const posts = await fetch(`https://express-backend-sigma.vercel.app/posts`);
         const postsJson = await posts.json();
-        const filteredPosts = postsJson.filter(post => post.author && post.author.username === req.params.username);
+        const filteredPosts = postsJson.filter(post => post.author && post.author.username === username);
 
         if (profile && profile.username) {
             res.status(200).render('profile', { profile, posts: filteredPosts });
@@ -28,8 +30,9 @@ app.get('/profile/:username', async (req, res) => {
     }
 });
 
-app.get('/posts/:id', async (req, res) => {
-    const postId = req.params.id;
+app.get(/^\/posts\/([a-fA-F0-9]{24})$/, async (req, res) => { // posts/:postId
+    const postId = req.params[0];  
+
     try {
         const postRes = await fetch(`https://express-backend-sigma.vercel.app/posts/${postId}`);
         const post = await postRes.json();
@@ -48,24 +51,24 @@ app.get('/posts/:id', async (req, res) => {
     }
 });
 
-app.get('/login', (req, res) => {
+
+app.get(/^\/login$/, (req, res) => { //login
     res.status(200).render('login');
 });
 
-app.get('/signup', (req, res) => {
+app.get(/^\/signup$/, (req, res) => { //signup
     res.status(200).render('signup');
 });
 
-app.get('/dashboard', (req, res) => {
+app.get(/^\/dashboard$/, (req, res) => { //dashboard
     res.status(200).render('dashboard');
 });
 
-app.get('/create', (req, res) => {
+app.get(/^\/create$/, (req, res) => { //create
     res.status(200).render('create-post');
 });
 
-app.get('*', (req, res) => {
-    res.status(200).render('error', { message: 'Page not found' });
-});
 
-module.exports = app;
+app.listen(3000, () => {
+    console.log('Server is running on http://localhost:3000');
+});
